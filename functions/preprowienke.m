@@ -14,7 +14,7 @@ L4 = [2, 7, 8, 10, 14, 15 ];
 L5 = [1, 3, 4, 5, 6, 9, 12, 13, 16]; 
 L6 = 11; 
 
-for s = 1:16
+for s = 2:16
 
 if ismember( s,L4 )
     appendix = {'','-1','-2','-3','-4'};   
@@ -86,9 +86,9 @@ rmpath( genpath( '/export/data/reichert/toolbox/fieldtripSVN' )); % ab hier werd
 addpath(genpath('/export/data/duerschm/allscripts'));
 
 % Notch filter details
-% nff             = 50:50:300; % notch filter frequencies
-% F               = [nff-2; nff+2]';
-% 
+nff             = 50:50:300; % notch filter frequencies
+F               = [nff-2; nff+2]';
+
 
 % band pass filter eog
 eog.data            = double(eog.data);
@@ -100,20 +100,20 @@ eog = rmfield( eog, 'BP' );
 
 
 %     meg             = ieegNotchFilter( meg,F ); %hier sagt er out of memory
-% for c = 1:size(meg.data,1 ); % hier filtern wir pro Kanal, da die Daten sonst f�r Matlab zu gro� sind
-%     disp( c );
-%     meg2.data = double( meg.data( c,: ));
-%     meg2.srate = meg.srate;
-%     meg2 = ieegNotchFilter( meg2,F );
-%     meg.data( c,: ) = meg2.data;
-% end;
+for c = 1:size(meg.data,1 ); % hier filtern wir pro Kanal, da die Daten sonst f�r Matlab zu gro� sind
+    disp( c );
+    meg2.data = double( meg.data( c,: ));
+    meg2.srate = meg.srate;
+    meg2 = ieegNotchFilter( meg2,F );
+    meg.data( c,: ) = meg2.data;
+end;
 
 %% Bandpass Filter
 for c = 1:size( meg.data,1 );
     disp( c )
     meg2.data = double( meg.data( c,: ));
     meg2.srate = meg.srate;
-    meg2 = ieegBandpassFilter( meg2,[.1 30]);
+    meg2 = ieegBandpassFilter( meg2,[1 200]);
     meg.data( c,: ) = single( meg2.BP - repmat( mean( meg2.BP,2 ),[1 length( meg2.BP )]));
 end
 clear meg2
@@ -130,7 +130,7 @@ clear meg2
 trigs_used          = [0 10 20 30 40 50 60];
 trigchan(~ismember(trigchan, trigs_used))=0;
 trialstart          = find( trigchan == 20 );
-trialdur            = round( -1*meg.srate:2*meg.srate );
+trialdur            = round( -1*meg.srate:3*meg.srate );
 trials              = bsxfun( @plus,trialstart',trialdur );
 [x2 x3]             = size( trials );
 
@@ -273,32 +273,32 @@ meg.data = meg.data-repmat( mean( meg.data),[size( meg.data,1 ) 1] );
 % clear excl 
 
 %% Absoluter Wert 3e-12
-% [x1, x2, x3] = size(meg.data);
-% crit = 3e-12;
-% 
-% for ex = 1:x3
-%     tmp = find( meg.data( :,:,ex) > crit);
-%     if isempty( tmp ) == 0
-%         excl( ex) = 1;
-%     else
-%         excl( ex ) = 0;
-%     end
-% end
-% excl = logical( excl );
-% 
-% meg.data( :,:,excl )      = [];
-% eog.data( :,:,excl )      = [];
-% meg.position( :,excl )    = [];
-% meg.RT( :,excl )          = [];
-% meg.fokus( :,excl )       = [];
-% meg.winkel( :,excl )      = [];
-% % meg.distance( :,excl )    = [];
-% % meg.distance2( :,excl )   = [];
-% meg.response( :,excl )    = [];
-% meg.side( :,excl )        = [];
-% % meg.timepoints( :,excl )  = [];
-% 
-% clear excl tmp ex crit
+[x1, x2, x3] = size(meg.data);
+crit = 3e-12;
+
+for ex = 1:x3
+    tmp = find( meg.data( :,:,ex) > crit);
+    if isempty( tmp ) == 0
+        excl( ex) = 1;
+    else
+        excl( ex ) = 0;
+    end
+end
+excl = logical( excl );
+
+meg.data( :,:,excl )      = [];
+eog.data( :,:,excl )      = [];
+meg.position( :,excl )    = [];
+meg.RT( :,excl )          = [];
+meg.fokus( :,excl )       = [];
+meg.winkel( :,excl )      = [];
+% meg.distance( :,excl )    = [];
+% meg.distance2( :,excl )   = [];
+meg.response( :,excl )    = [];
+meg.side( :,excl )        = [];
+% meg.timepoints( :,excl )  = [];
+
+clear excl tmp ex crit
 
 %% Blinks
 [x1, x2, x3] = size(eog.data);
@@ -349,13 +349,13 @@ clear excl tr EM_ch1 EM_ch2
 % meg.side( :,excl )        = [];
 % meg.timepoints( :,excl )  = [];
 
-% clear excl crit X v 
+clear excl crit X v 
 
 %% Speichern
 if s<10;
-    filename = (['/export/data/wienke/data/Esmondo/MW0' num2str( s ) 'meg.mat']);
+    filename = (['/export/data/wienke/data/motor/MW0' num2str( s ) 'meg.mat']);
 else
-    filename = (['/export/data/wienke/data/Esmondo/MW' num2str( s ) 'meg.mat']);
+    filename = (['/export/data/wienke/data/motor/MW' num2str( s ) 'meg.mat']);
 end
 save( filename,'-v7.3','meg','eog' );
 
