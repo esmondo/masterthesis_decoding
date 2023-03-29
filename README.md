@@ -16,3 +16,6 @@ MATLAB Scripts for a Master Thesis:
 **Conclusion |** Stronger discriminability to a relevant item among distractors in both visual fields could lead to more reliable N2pc in a single trial EEG/MEG, which drives better decoding performance.
 
 **Keywords |** Event-related Potentials, Attention shifts, N2pc, Selective Attention, Decoding, Classification, Support Vector Machine, Electroencephalography, Magnetoencephalography.
+#
+
+To see the decoding algorithm, please check **maincode.m** out.
