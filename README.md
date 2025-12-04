@@ -17,5 +17,3 @@ MATLAB Scripts for a Master Thesis:
 
 **Keywords |** Event-related Potentials, Attention shifts, N2pc, Selective Attention, Decoding, Classification, Support Vector Machine, Electroencephalography, Magnetoencephalography.
 #
-
-To see the decoding algorithm, please check **maincode.m** out.
